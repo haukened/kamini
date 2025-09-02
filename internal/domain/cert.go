@@ -53,11 +53,6 @@ type SignRequest struct {
 }
 
 // Signer is the shape for certificate signing ports.
-type Signer interface {
-	// Sign produces a certificate and returns the assigned serial and key fingerprint.
-	// The implementation lives in adapters; the shape remains in domain for tests.
-	Sign(spec CertSpec) (serial uint64, keyFP string, err error)
-}
 
 // BuildCertSpec composes a CertSpec from policy and identity using clock and TTL rules.
 // ValidAfter = now - DefaultSkew

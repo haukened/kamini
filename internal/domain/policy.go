@@ -22,11 +22,6 @@ type PolicyDecision struct {
 	Extensions      map[string]string
 }
 
-// PolicyEngine is kept in domain only as a shape for tests. Real impls live in adapters.
-type PolicyEngine interface {
-	Decide(id Identity, ctx SignContext) (PolicyDecision, error)
-}
-
 // Helper to compose KeyID deterministically (for audit/search).
 func ComposeKeyID(id Identity, serial uint64) string {
 	// e.g., "<serial>|<subject>|<username>"

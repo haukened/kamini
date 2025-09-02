@@ -17,13 +17,23 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
 ---
 
 ## 1. Domain & Interfaces
-- [ ] Define `internal/domain` types:
-  - [ ] Identity (subject, username, email, roles, groups, claims)
-  - [ ] Cert entity (serial, validity, principals)
-  - [ ] Policy models
-- [ ] Define `internal/usecase` ports (interfaces):
-  - [ ] Authenticator, Authorizer, Signer, SerialStore, AuditSink, AgentLoader, Clock
+- [x] Define `internal/domain` types:
+  - [x] Identity (subject, username, email, roles, groups, claims)
+  - [x] Cert entity (serial, validity, principals)
+  - [x] Policy models
+- [x] Define `internal/usecase` ports (interfaces):
+  - [x] Authenticator, Authorizer, Signer, SerialStore, AuditSink, AgentLoader, Clock
 - [ ] Implement public plugin contracts in `pkg/plugin/*` (keep stable)
+  - [x] signer: pluggable CA-backed SSH certificate signer
+  - [ ] auth/authz: contracts if needed for external providers
+
+### CA Key Management (blocking for signing)
+- [ ] Define signer adapter abstraction for CA key custody
+  - [ ] Disk-based CA key (ed25519) for dev (PEM path, permissions)
+  - [ ] Azure Key Vault signer (future)
+  - [ ] HashiCorp Vault signer (future)
+  - [ ] Other KMS (AWS/GCP) (future)
+ - [ ] Minimal rotation story (document): new key id → serve both until old certs expire
 
 ---
 
