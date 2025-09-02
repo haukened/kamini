@@ -26,16 +26,5 @@ Request a short-lived SSH user certificate.
       "not_after": 1700003599
     }
 
-### `GET /v1/whoami`
-Validate identity and return claims and roles.
-
-**Response JSON:**
-
-    {
-      "subject": "dave@contoso",
-      "roles": ["ssh.admin", "dev"],
-      "tenant": "contoso.onmicrosoft.com"
-    }
-
 ### `GET /v1/healthz`
 Health check endpoint for probes.
