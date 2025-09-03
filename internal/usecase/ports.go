@@ -11,6 +11,19 @@ import (
 // All usecases should rely on this, never time.Now() directly.
 type Clock = domain.Clock
 
+// Logger is a minimal, structured, leveled logger for DI.
+// Adapters implement this (e.g., slog-backed) and use cases/adapters consume it.
+// Args follow slog semantics: alternating key, value pairs or slog.Attr.
+type Logger interface {
+	Debug(ctx context.Context, msg string, args ...any)
+	Info(ctx context.Context, msg string, args ...any)
+	Warn(ctx context.Context, msg string, args ...any)
+	Error(ctx context.Context, msg string, args ...any)
+
+	With(args ...any) Logger
+	WithGroup(name string) Logger
+}
+
 // Authorizer decides principals/ttl/options based on identity and context.
 // Implementations live in adapters.
 type Authorizer interface {
@@ -19,8 +32,8 @@ type Authorizer interface {
 
 // Signer produces SSH certificates from a CertSpec and provided serial.
 // Implementations live in internal/adapters (e.g., signer/disk, signer/akv, signer/vault).
-// If we later support third-party plugins, we'll expose a public contract under pkg/plugin/*
-// and add a small bridge adapter to satisfy this port without changing use cases.
+// If we later support third-party plugins, we'll add a small bridge adapter to satisfy this port
+// without changing use cases.
 type Signer interface {
 	// Sign issues a certificate using CA key material, assigning the provided serial, and returns
 	// the raw OpenSSH certificate bytes plus the signing key fingerprint.
