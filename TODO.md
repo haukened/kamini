@@ -36,7 +36,6 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
   - [ ] Azure Key Vault signer (future)
   - [ ] HashiCorp Vault signer (future)
   - [ ] Other KMS (AWS/GCP) (future)
- - [ ] Minimal rotation story (document): new key id → serve both until old certs expire
 
 ---
 
