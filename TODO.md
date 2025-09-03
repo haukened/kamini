@@ -51,9 +51,9 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
 - [x] Authorizer (static rules v0):
   - [x] Map IdP claims → principals (normalize usernames, alias map)
   - [x] TTL cap enforcement
-- [ ] Signer:
+- [X] Signer:
   - [x] File-based CA key (ed25519 preferred)
-  - [ ] User cert signing (serial, keyid, principals, extensions)
+  - [x] User cert signing (serial, keyid, principals, extensions)
 - [x] Storage:
   - [x] Serial counter (file+memory for MVP)
   - [x] Audit sink → stdout (structure logged)
@@ -100,6 +100,11 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
   - [ ] `permit-pty` on by default
   - [ ] Optional `source-address` for privileged roles (configurable)
 - [ ] Error taxonomy (consistent codes + JSON envelope)
+- [ ] K-PoP (Kamini Proof-of-Possession) headers and middleware (device key, nonce, proof signature)
+- [ ] CLI support for K-PoP: generate/store device key, sign requests
+- [ ] Sealed-box encrypted responses: client ephemeral X25519 key, server sealed-box cert JSON
+- [ ] CLI support for sealed-box: unseal response, validate SSH cert with pinned CA
+- [ ] TOFU pinning of SSH CA public key on first login, client-side trust file
 
 ---
 
@@ -152,6 +157,7 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
 - [ ] Host certificates (only if requested by users)
 - [ ] DPoP/PoP token binding (advanced)
 - [ ] Windows agent support notes (OpenSSH/Pageant)
+- [ ] Dual-signing/rotation support for SSH CA pinning
 
 ---
 
