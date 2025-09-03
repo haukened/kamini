@@ -1,0 +1,50 @@
+# Kamini example configuration (all options)
+
+server:
+  addr: ":8080"
+  request:
+    timeout: 15s
+
+log:
+  level: info         # debug|info|warn|error
+  format: json        # json|text
+
+auth:
+  oidc:
+    issuer_url: "https://issuer.example.com/"   # OIDC issuer URL
+    client_id: "kamini"                         # Expected client_id in tokens
+    skip_client_id_check: false                  # Set true to disable client_id verification
+    http_timeout: 10s                            # HTTP client timeout for OIDC discovery/jwks
+    # Claim field mappings (as they appear in your ID token/userinfo)
+    claims_username: "preferred_username"
+    claims_email: "email"
+    claims_roles: "roles"
+    claims_groups: "groups"
+
+authorize:
+  allow:
+    roles: ["admin", "ops"]
+    groups: ["ssh-users", "wheel"]
+  principal:
+    templates:
+      - "user:{auth.username}"
+      - "email:{auth.email}"
+  source:
+    cidrs:
+      - "10.0.0.0/8"
+      - "192.168.0.0/16"
+  default:
+    ttl: 1h
+  max:
+    ttl: 8h
+
+signer:
+  ca:
+    key_path: "/etc/kamini/ca_ed25519"   # ed25519 private key path (0600 perms)
+
+storage:
+  serial:
+    file_path: "/var/lib/kamini/serial.db"  # durable serial counter storage
+
+audit:
+  sink: stdout  # stdout (MVP)
