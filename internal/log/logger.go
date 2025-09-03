@@ -24,3 +24,6 @@ func (s *Slog) Error(ctx context.Context, msg string, args ...any) {
 
 func (s *Slog) With(args ...any) usecase.Logger      { return &Slog{l: s.l.With(args...)} }
 func (s *Slog) WithGroup(name string) usecase.Logger { return &Slog{l: s.l.WithGroup(name)} }
+
+// Assert that Slog implements usecase.Logger.
+var _ usecase.Logger = (*Slog)(nil)
