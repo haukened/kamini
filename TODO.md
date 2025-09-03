@@ -24,8 +24,8 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
 - [x] Define `internal/usecase` ports (interfaces):
   - [x] Authenticator, Authorizer, Signer, SerialStore, AuditSink, AgentLoader, Clock
 - [ ] Adapter implementations in `internal/adapters/*`
-  - [ ] auth (OIDC via discovery; provider-agnostic)
-  - [ ] authorize (static rules v0; later CEL/OPA)
+  - [x] auth (OIDC via discovery; provider-agnostic)
+  - [x] authorize (static rules v0; later CEL/OPA)
   - [ ] signer backends (disk now; AKV/Vault later)
   - [ ] storage (serials)
   - [ ] audit sink (stdout)
