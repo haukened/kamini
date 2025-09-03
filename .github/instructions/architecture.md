@@ -20,8 +20,6 @@ adapters (http, oidc, signer, storage, agent)
     │  ├─ adapters/         # IO implementations (http, oidc, ssh, storage)
     │  ├─ config/           # config loader
     │  └─ bootstrap/        # composition root (DI)
-    ├─ pkg/                 # public plugin SDK (stable)
-    │  └─ plugin/           # auth, authorize, signer interfaces
     └─ api/                 # REST contracts (OpenAPI, examples)
 
 ## Design Principles
@@ -29,4 +27,3 @@ adapters (http, oidc, signer, storage, agent)
 - **Usecase**: orchestrates flows via interfaces.
 - **Adapters**: implement interfaces, depend outward (http, db, oidc, ssh).
 - **cmd/**: wires everything together.
-- **pkg/**: contains only stable plugin interfaces for external use.

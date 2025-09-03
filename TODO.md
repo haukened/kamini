@@ -10,7 +10,7 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
   - [x] `cmd/kamini/` (CLI)
   - [x] `cmd/kamini-server/` (server)
   - [X] `internal/{domain,usecase,adapters,config,bootstrap}/`
-  - [x] `pkg/plugin/{auth,authorize,signer}/`
+  - [ ] Adapters live under `internal/adapters/*`; avoid public `pkg/*` for now
   - [x] `.github/instructions/` (seeded docs)
 - [x] Add LICENSE (AGPL-3.0) + README
 
@@ -23,9 +23,13 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
   - [x] Policy models
 - [x] Define `internal/usecase` ports (interfaces):
   - [x] Authenticator, Authorizer, Signer, SerialStore, AuditSink, AgentLoader, Clock
-- [ ] Implement public plugin contracts in `pkg/plugin/*` (keep stable)
-  - [x] signer: pluggable CA-backed SSH certificate signer
-  - [ ] auth/authz: contracts if needed for external providers
+- [ ] Adapter implementations in `internal/adapters/*`
+  - [ ] auth (OIDC via discovery; provider-agnostic)
+  - [ ] authorize (static rules v0; later CEL/OPA)
+  - [ ] signer backends (disk now; AKV/Vault later)
+  - [ ] storage (serials)
+  - [ ] audit sink (stdout)
+  - [ ] If third-party plugins are needed later, define a small public contract and bridge adapter
 
 ### CA Key Management (blocking for signing)
 - [ ] Define signer adapter abstraction for CA key custody
