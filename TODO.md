@@ -9,8 +9,8 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
 - [x] Create base layout:
   - [x] `cmd/kamini/` (CLI)
   - [x] `cmd/kamini-server/` (server)
-  - [X] `internal/{domain,usecase,adapters,config,bootstrap}/`
-  - [ ] Adapters live under `internal/adapters/*`; avoid public `pkg/*` for now
+  - [x] `internal/{domain,usecase,adapters,config,bootstrap}/`
+  - [x] Adapters live under `internal/adapters/*`; avoid public `pkg/*` for now
   - [x] `.github/instructions/` (seeded docs)
 - [x] Add LICENSE (AGPL-3.0) + README
 
