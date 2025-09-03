@@ -28,8 +28,7 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
   - [x] authorize (static rules v0; later CEL/OPA)
   - [ ] signer backends (disk now; AKV/Vault later)
   - [x] storage (serials)
-  - [ ] audit sink (stdout)
-  - [ ] If third-party plugins are needed later, define a small public contract and bridge adapter
+  - [x] audit sink (stdout)
 
 ### CA Key Management (blocking for signing)
 - [ ] Define signer adapter abstraction for CA key custody
