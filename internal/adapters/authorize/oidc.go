@@ -51,11 +51,8 @@ func (a *OIDCAuthorizer) Decide(id domain.Identity, ctx domain.SignContext) (dom
 		return domain.PolicyDecision{}, domain.PolicyDeny{Code: domain.DenyPrincipalNotAllowed, Message: "no principals"}
 	}
 
-	// TTL clamp via domain.TTL rules happens later; we set the requested TTL here.
-	ttl := a.cfg.DefaultTTL
-	if ctx.RequestedTTL > 0 {
-		ttl = ctx.RequestedTTL
-	}
+	// TTL clamp: enforce defaults and caps according to config.
+	ttl := (domain.TTL{Default: a.cfg.DefaultTTL, Max: a.cfg.MaxTTL}).Clamp(ctx.RequestedTTL)
 
 	opts := map[string]string{}
 	if len(a.cfg.SourceCIDRs) > 0 {

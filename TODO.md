@@ -45,18 +45,18 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
   - [ ] Routing + middleware (request ID, logging, error envelope)
   - [ ] `POST /v1/ssh/sign-user` (happy-path only)
   - [ ] `GET /v1/healthz`
-- [ ] OIDC token verification adapter (go-oidc):
+- [x] OIDC token verification adapter (go-oidc):
   - [ ] Issuer, audience, `tid` checks
-  - [ ] Parse claims → domain Identity
-- [ ] Authorizer (static rules v0):
-  - [ ] Map IdP claims → principals (normalize usernames, alias map)
-  - [ ] TTL cap enforcement
-- [ ] Signer (OpenSSH):
-  - [ ] File-based CA key (ed25519 preferred)
+  - [x] Parse claims → domain Identity
+- [x] Authorizer (static rules v0):
+  - [x] Map IdP claims → principals (normalize usernames, alias map)
+  - [x] TTL cap enforcement
+- [ ] Signer:
+  - [x] File-based CA key (ed25519 preferred)
   - [ ] User cert signing (serial, keyid, principals, extensions)
-- [ ] Storage:
-  - [ ] Serial counter (SQLite or in-memory for MVP)
-  - [ ] Audit sink → stdout (structure logged)
+- [x] Storage:
+  - [x] Serial counter (file+memory for MVP)
+  - [x] Audit sink → stdout (structure logged)
 
 **Acceptance (server MVP):**
 - `curl` with valid bearer + public key returns a signed user cert JSON
