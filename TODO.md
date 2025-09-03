@@ -26,13 +26,13 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
 - [ ] Adapter implementations in `internal/adapters/*`
   - [x] auth (OIDC via discovery; provider-agnostic)
   - [x] authorize (static rules v0; later CEL/OPA)
-  - [ ] signer backends (disk now; AKV/Vault later)
+  - [x] signer backends (disk now; AKV/Vault later)
   - [x] storage (serials)
   - [x] audit sink (stdout)
 
 ### CA Key Management (blocking for signing)
 - [ ] Define signer adapter abstraction for CA key custody
-  - [ ] Disk-based CA key (ed25519) for dev (PEM path, permissions)
+  - [x] Disk-based CA key (ed25519) for dev (PEM path, permissions)
   - [ ] Azure Key Vault signer (future)
   - [ ] HashiCorp Vault signer (future)
   - [ ] Other KMS (AWS/GCP) (future)

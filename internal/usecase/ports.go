@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"crypto"
 	"time"
 
 	"github.com/haukened/kamini/internal/domain"
@@ -50,6 +51,13 @@ type Authenticator interface {
 // Implementations may be in-memory for dev, sqlite/postgres for prod.
 type SerialStore interface {
 	Next(ctx context.Context) (uint64, error)
+}
+
+// CAKeySource provides access to CA private key material for signing.
+// Adapters implement this to retrieve keys from disk or KMS.
+// For MVP we support unencrypted ed25519 keys.
+type CAKeySource interface {
+	Load(ctx context.Context) (crypto.Signer, error)
 }
 
 // AuditSink persists or emits audit events (stdout, db, log aggregator).
