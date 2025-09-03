@@ -36,11 +36,11 @@ This plan tracks the first iterations of **Kamini**. Check items off as they lan
   - [ ] Azure Key Vault signer (future)
   - [ ] HashiCorp Vault signer (future)
   - [ ] Other KMS (AWS/GCP) (future)
-
+ 
 ---
 
 ## 2. Minimal Server (MVP Skeleton)
-- [ ] Config loader (`internal/config`)
+- [x] Config loader (`internal/config`)
 - [ ] HTTP server adapter:
   - [ ] Routing + middleware (request ID, logging, error envelope)
   - [ ] `POST /v1/ssh/sign-user` (happy-path only)

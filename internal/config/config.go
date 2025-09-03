@@ -24,8 +24,12 @@ type Root struct {
 }
 
 type ServerConfig struct {
-	Addr           string        `koanf:"addr"`
-	RequestTimeout time.Duration `koanf:"request_timeout"`
+	Addr    string        `koanf:"addr"`
+	Request ServerRequest `koanf:"request"`
+}
+
+type ServerRequest struct {
+	Timeout time.Duration `koanf:"timeout"`
 }
 
 type LogConfig struct {
@@ -41,28 +45,45 @@ type OIDCConfig struct {
 	IssuerURL         string        `koanf:"issuer_url"`
 	ClientID          string        `koanf:"client_id"`
 	SkipClientIDCheck bool          `koanf:"skip_client_id_check"`
-	Claims            OIDCClaims    `koanf:"claims"`
 	HTTPTimeout       time.Duration `koanf:"http_timeout"`
-}
-
-type OIDCClaims struct {
-	Username string `koanf:"username"`
-	Email    string `koanf:"email"`
-	Roles    string `koanf:"roles"`
-	Groups   string `koanf:"groups"`
+	// Flattened claim key names to align with two-underscore mapping
+	ClaimsUsername string `koanf:"claims_username"`
+	ClaimsEmail    string `koanf:"claims_email"`
+	ClaimsRoles    string `koanf:"claims_roles"`
+	ClaimsGroups   string `koanf:"claims_groups"`
 }
 
 type AuthorizeConfig struct {
-	AllowRoles         []string      `koanf:"allow_roles"`
-	AllowGroups        []string      `koanf:"allow_groups"`
-	PrincipalTemplates []string      `koanf:"principal_templates"`
-	DefaultTTL         time.Duration `koanf:"default_ttl"`
-	MaxTTL             time.Duration `koanf:"max_ttl"`
-	SourceCIDRs        []string      `koanf:"source_cidrs"`
+	Allow     AuthorizeAllow     `koanf:"allow"`
+	Principal AuthorizePrincipal `koanf:"principal"`
+	Source    AuthorizeSource    `koanf:"source"`
+	Default   AuthorizeTTL       `koanf:"default"`
+	Max       AuthorizeTTL       `koanf:"max"`
+}
+
+type AuthorizeAllow struct {
+	Roles  []string `koanf:"roles"`
+	Groups []string `koanf:"groups"`
+}
+
+type AuthorizePrincipal struct {
+	Templates []string `koanf:"templates"`
+}
+
+type AuthorizeSource struct {
+	CIDRs []string `koanf:"cidrs"`
+}
+
+type AuthorizeTTL struct {
+	TTL time.Duration `koanf:"ttl"`
 }
 
 type SignerConfig struct {
-	CAKey CAKeyConfig `koanf:"ca_key"`
+	CA SignerCA `koanf:"ca"`
+}
+
+type SignerCA struct {
+	KeyPath string `koanf:"key_path"`
 }
 
 type CAKeyConfig struct {
@@ -84,17 +105,22 @@ type AuditConfig struct {
 // Defaults returns an opinionated default configuration.
 var DEFAULT_CONFIG = Root{
 	Server: ServerConfig{
-		Addr:           ":8080",
-		RequestTimeout: 15 * time.Second,
+		Addr: ":8080",
+		Request: ServerRequest{
+			Timeout: 15 * time.Second,
+		},
 	},
 	Log: LogConfig{Level: "info", Format: "json"},
 	Auth: AuthConfig{OIDC: OIDCConfig{
-		Claims:      OIDCClaims{Username: "preferred_username", Email: "email", Roles: "roles", Groups: "groups"},
-		HTTPTimeout: 10 * time.Second,
+		HTTPTimeout:    10 * time.Second,
+		ClaimsUsername: "preferred_username",
+		ClaimsEmail:    "email",
+		ClaimsRoles:    "roles",
+		ClaimsGroups:   "groups",
 	}},
 	Authorize: AuthorizeConfig{
-		DefaultTTL: 1 * time.Hour,
-		MaxTTL:     8 * time.Hour,
+		Default: AuthorizeTTL{TTL: 1 * time.Hour},
+		Max:     AuthorizeTTL{TTL: 8 * time.Hour},
 	},
 	Audit: AuditConfig{Sink: "stdout"},
 }
@@ -160,44 +186,25 @@ var fileLoader = func(k *koanf.Koanf, path string) error {
 var envLoader = func(k *koanf.Koanf) error {
 	// Keys that should be treated as lists when values contain commas
 	listKeys := map[string]struct{}{
-		"authorize.allow_roles":         {},
-		"authorize.allow_groups":        {},
-		"authorize.principal_templates": {},
-		"authorize.source_cidrs":        {},
+		"authorize.allow.roles":         {},
+		"authorize.allow.groups":        {},
+		"authorize.principal.templates": {},
+		"authorize.source.cidrs":        {},
 	}
 
 	// Keys whose values are durations (parsed via time.ParseDuration when sourced from env)
 	durationKeys := map[string]struct{}{
-		"server.request_timeout": {},
+		"server.request.timeout": {},
 		"auth.oidc.http_timeout": {},
-		"authorize.default_ttl":  {},
-		"authorize.max_ttl":      {},
+		"authorize.default.ttl":  {},
+		"authorize.max.ttl":      {},
 	}
 
 	return k.Load(env.Provider(".", env.Opt{
 		Prefix: "KAMINI_",
 		TransformFunc: func(k, v string) (string, any) {
-			// Normalize
-			raw := strings.ToLower(strings.TrimPrefix(k, "KAMINI_"))
-
-			// Explicit nested-prefix mapping to avoid clobbering underscores in field names
-			switch {
-			case strings.HasPrefix(raw, "auth_oidc_claims_"):
-				k = "auth.oidc.claims." + strings.TrimPrefix(raw, "auth_oidc_claims_")
-			case strings.HasPrefix(raw, "auth_oidc_"):
-				k = "auth.oidc." + strings.TrimPrefix(raw, "auth_oidc_")
-			case strings.HasPrefix(raw, "signer_ca_key_"):
-				k = "signer.ca_key." + strings.TrimPrefix(raw, "signer_ca_key_")
-			case strings.HasPrefix(raw, "storage_serial_"):
-				k = "storage.serial." + strings.TrimPrefix(raw, "storage_serial_")
-			default:
-				// Fallback: only the first underscore delimits top-level.section
-				if i := strings.IndexByte(raw, '_'); i >= 0 {
-					k = raw[:i] + "." + raw[i+1:]
-				} else {
-					k = raw
-				}
-			}
+			// Consistent mapping: replace first two underscores with dots; others remain
+			k = strings.Replace(strings.ToLower(strings.TrimPrefix(k, "KAMINI_")), "_", ".", 2)
 
 			// Durations: parse only for known duration keys
 			if _, ok := durationKeys[k]; ok {

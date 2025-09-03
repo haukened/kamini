@@ -46,7 +46,8 @@ storage:
   serial:
     file_path: "/tmp/serial.db"
 authorize:
-  principal_templates: ["a", "b"]
+  principal:
+    templates: ["a", "b"]
 `
 	fp := writeTempYAML(t, y)
 
@@ -63,8 +64,8 @@ authorize:
 	if got := cfg.Storage.Serial.FilePath; got != "/tmp/serial.db" {
 		t.Fatalf("Storage.Serial.FilePath = %q, want %q", got, "/tmp/serial.db")
 	}
-	if l := len(cfg.Authorize.PrincipalTemplates); l != 2 || cfg.Authorize.PrincipalTemplates[0] != "a" || cfg.Authorize.PrincipalTemplates[1] != "b" {
-		t.Fatalf("Authorize.PrincipalTemplates = %+v, want [a b]", cfg.Authorize.PrincipalTemplates)
+	if l := len(cfg.Authorize.Principal.Templates); l != 2 || cfg.Authorize.Principal.Templates[0] != "a" || cfg.Authorize.Principal.Templates[1] != "b" {
+		t.Fatalf("Authorize.Principal.Templates = %+v, want [a b]", cfg.Authorize.Principal.Templates)
 	}
 }
 
@@ -86,17 +87,17 @@ func TestLoad_EnvOverridesAndParsing(t *testing.T) {
 	if cfg.Server.Addr != ":9090" {
 		t.Fatalf("Server.Addr = %q, want %q", cfg.Server.Addr, ":9090")
 	}
-	if cfg.Server.RequestTimeout != 22*time.Second {
-		t.Fatalf("Server.RequestTimeout = %v, want %v", cfg.Server.RequestTimeout, 22*time.Second)
+	if cfg.Server.Request.Timeout != 22*time.Second {
+		t.Fatalf("Server.Request.Timeout = %v, want %v", cfg.Server.Request.Timeout, 22*time.Second)
 	}
 	if cfg.Auth.OIDC.HTTPTimeout != 7*time.Second {
 		t.Fatalf("Auth.OIDC.HTTPTimeout = %v, want %v", cfg.Auth.OIDC.HTTPTimeout, 7*time.Second)
 	}
-	if l := len(cfg.Authorize.AllowRoles); l != 3 || cfg.Authorize.AllowRoles[0] != "admin" || cfg.Authorize.AllowRoles[1] != "ops" || cfg.Authorize.AllowRoles[2] != "dev" {
-		t.Fatalf("Authorize.AllowRoles = %+v, want [admin ops dev]", cfg.Authorize.AllowRoles)
+	if l := len(cfg.Authorize.Allow.Roles); l != 3 || cfg.Authorize.Allow.Roles[0] != "admin" || cfg.Authorize.Allow.Roles[1] != "ops" || cfg.Authorize.Allow.Roles[2] != "dev" {
+		t.Fatalf("Authorize.Allow.Roles = %+v, want [admin ops dev]", cfg.Authorize.Allow.Roles)
 	}
-	if cfg.Signer.CAKey.Path != "/tmp/dev_ca" {
-		t.Fatalf("Signer.CAKey.Path = %q, want %q", cfg.Signer.CAKey.Path, "/tmp/dev_ca")
+	if cfg.Signer.CA.KeyPath != "/tmp/dev_ca" {
+		t.Fatalf("Signer.CA.KeyPath = %q, want %q", cfg.Signer.CA.KeyPath, "/tmp/dev_ca")
 	}
 	if cfg.Storage.Serial.FilePath != "/tmp/serial2.db" {
 		t.Fatalf("Storage.Serial.FilePath = %q, want %q", cfg.Storage.Serial.FilePath, "/tmp/serial2.db")
@@ -140,8 +141,8 @@ func TestEnvPrefixMapping_Claims(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Load returned error: %v", err)
 	}
-	if cfg.Auth.OIDC.Claims.Username != "sub" {
-		t.Fatalf("Claims.Username = %q, want %q", cfg.Auth.OIDC.Claims.Username, "sub")
+	if cfg.Auth.OIDC.ClaimsUsername != "sub" {
+		t.Fatalf("ClaimsUsername = %q, want %q", cfg.Auth.OIDC.ClaimsUsername, "sub")
 	}
 }
 
