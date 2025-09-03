@@ -9,12 +9,12 @@ servers:
   - url: https://localhost:8443
     description: Local development server
 paths:
-  /v1/ssh/sign-user:
+  /v1/certs/user:
     post:
       summary: Issue a short-lived SSH user certificate
       description: |
         Request a signed SSH user certificate. Requires a valid OIDC bearer token.
-      operationId: signUserCert
+      operationId: issueUserCert
       security:
         - bearerAuth: []
       requestBody:
@@ -86,6 +86,70 @@ paths:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /v1/certs/host:
+    post:
+      summary: Issue a short-lived SSH host certificate
+      description: |
+        This endpoint is reserved for future host certificate issuance.
+      operationId: issueHostCert
+      security:
+        - bearerAuth: []
+      responses:
+        '501':
+          description: Not implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /v1/ca/user:
+    get:
+      summary: Get SSH User CA public key
+      description: |
+        Fetch the SSH User CA public key used to sign user certificates. Clients should retrieve and pin this key after login (TOFU pinning).
+      operationId: getUserCAKey
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: SSH User CA public key in OpenSSH authorized_keys format
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICv5... kamini-ca@domain"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /v1/ca/host:
+    get:
+      summary: Get SSH Host CA public key
+      description: |
+        This endpoint is reserved for future use and currently always returns "Not implemented".
+      operationId: getHostCAKey
+      security:
+        - bearerAuth: []
+      responses:
+        '501':
+          description: Not implemented
           content:
             application/json:
               schema:
