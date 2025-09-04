@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -63,5 +64,14 @@ func TestBuildCertSpec(t *testing.T) {
 	}
 	if spec.KeyID != "kid" {
 		t.Fatalf("KeyID = %q", spec.KeyID)
+	}
+}
+
+func TestBuildCertSpec_NoPrincipals(t *testing.T) {
+	fc := fakeClock{t: time.Date(2024, 3, 10, 12, 0, 0, 0, time.UTC)}
+	dec := PolicyDecision{Principals: nil, TTL: time.Hour}
+	_, err := BuildCertSpec(Identity{}, dec, TTL{Default: time.Hour, Max: 4 * time.Hour}, fc, "kid")
+	if !errors.Is(err, ErrNoPrincipals) {
+		t.Fatalf("expected ErrNoPrincipals, got %v", err)
 	}
 }

@@ -62,10 +62,14 @@ func BuildCertSpec(id Identity, decision PolicyDecision, ttl TTL, clk Clock, key
 	nb := now.Add(-DefaultSkew)
 	dur := ttl.Clamp(decision.TTL)
 	na := nb.Add(dur)
+	principals := NormalizePrincipals(decision.Principals)
+	if len(principals) == 0 {
+		return CertSpec{}, ErrNoPrincipals
+	}
 	spec := CertSpec{
 		PublicKeyAuthorized: "",
 		KeyID:               keyID,
-		Principals:          NormalizePrincipals(decision.Principals),
+		Principals:          principals,
 		ValidAfter:          nb,
 		ValidBefore:         na,
 		CriticalOptions:     cloneStringMap(decision.CriticalOptions),
