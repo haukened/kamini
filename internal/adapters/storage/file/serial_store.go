@@ -28,6 +28,7 @@ func NewFileSerialStore(path string, l usecase.Logger) (*FileSerialStore, error)
 	if path == "" {
 		return nil, errors.New("path required")
 	}
+	path = filepath.Clean(path)
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 		return nil, fmt.Errorf("mkdir: %w", err)
 	}
@@ -111,11 +112,16 @@ func (f *FileSerialStore) read() (uint64, error) {
 }
 
 func (f *FileSerialStore) write(v uint64) error {
-	tmp := f.path + ".tmp"
-	fd, err := os.OpenFile(tmp, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o600)
+	dir := filepath.Dir(f.path)
+	base := filepath.Base(f.path)
+	// Create a secure temp file in the same directory to allow atomic rename.
+	fd, err := os.CreateTemp(dir, base+".tmp-*")
 	if err != nil {
 		return fmt.Errorf("open tmp: %w", err)
 	}
+	tmp := fd.Name()
+	// Ensure permissions are strict (in case of umask differences).
+	_ = os.Chmod(tmp, 0o600)
 	if _, err := io.WriteString(fd, strconv.FormatUint(v, 10)+"\n"); err != nil {
 		_ = fd.Close()
 		return fmt.Errorf("write: %w", err)

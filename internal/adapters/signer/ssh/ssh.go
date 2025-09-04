@@ -49,6 +49,10 @@ func (s *OpenSSHSigner) Sign(spec domain.CertSpec, serial uint64) ([]byte, strin
 		return nil, "", err
 	}
 
+	// Convert validity times safely to uint64 (OpenSSH uses seconds since epoch as uint64).
+	ua := toCertTime(spec.ValidAfter)
+	ub := toCertTime(spec.ValidBefore)
+
 	// Build certificate.
 	cert := &sshx.Certificate{
 		Key:             pub,
@@ -56,8 +60,8 @@ func (s *OpenSSHSigner) Sign(spec domain.CertSpec, serial uint64) ([]byte, strin
 		CertType:        sshx.UserCert,
 		KeyId:           spec.KeyID,
 		ValidPrincipals: append([]string(nil), spec.Principals...),
-		ValidAfter:      uint64(spec.ValidAfter.Unix()),
-		ValidBefore:     uint64(spec.ValidBefore.Unix()),
+		ValidAfter:      ua,
+		ValidBefore:     ub,
 		Permissions: sshx.Permissions{
 			CriticalOptions: map[string]string{},
 			Extensions:      map[string]string{},
@@ -92,4 +96,14 @@ func (s *OpenSSHSigner) Sign(spec domain.CertSpec, serial uint64) ([]byte, strin
 	}
 
 	return raw, fp, nil
+}
+
+// toCertTime converts a time to a non-negative uint64 Unix seconds value for OpenSSH certificates.
+// It clamps negatives to 0 and then casts.
+func toCertTime(t time.Time) uint64 {
+	sec := t.Unix()
+	if sec < 0 {
+		return 0
+	}
+	return uint64(sec) // #nosec G115 -- non-negative int64 seconds safely fit into uint64
 }
